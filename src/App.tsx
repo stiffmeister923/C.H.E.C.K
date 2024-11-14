@@ -25,6 +25,9 @@ import {
 import type { GetProp, UploadFile, UploadProps } from "antd";
 import { RcFile } from "antd/lib/upload";
 
+type FileMap = {
+  [key: string]: string[];
+};
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 const getBase64 = (file: FileType): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -49,7 +52,10 @@ const App: React.FC = () => {
   const [isUploadTestPaperOpen, setIsUploadTestPaperOpen] = useState(false);
   const [isGradeOpen, setIsGradeOpen] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [fileListAK, setfileListAK] = useState<UploadFile[]>([]);
+  const [fileLinksAK, setfileLinksAK] = useState<FileMap>({});
+  const [fileListTP, setfileListTP] = useState<UploadFile[]>([]);
+  const [fileLinksTP, setfileLinksTP] = useState<FileMap>({});
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -69,9 +75,48 @@ const App: React.FC = () => {
     setPreviewImage(file.url || (file.preview as string));
     setPreviewOpen(true);
   };
+  const handleDownloadShort = () => {
+    // Download the "Short" file
+    window.open(
+      "https://drive.google.com/file/d/1OmPtfnrIQ-ZcGKiybzlFuPyR_7VhNoa3/view?usp=drive_link",
+      "_blank"
+    );
+  };
 
-  const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) =>
-    setFileList(newFileList);
+  const handleDownloadLong = () => {
+    // Download the "Long" file
+    window.open(
+      "https://drive.google.com/file/d/1cvGzbczhuqQ6TBNxc3tfGQPQKz3oSHPy/view?usp=drive_link",
+      "_blank"
+    );
+  };
+
+  const handleGithubRepo = () => {
+    // Download the "Short" file
+    window.open(
+      "https://github.com/stiffmeister923/C.H.E.C.K/tree/master",
+      "_blank"
+    );
+  };
+
+  const handleFBLink = () => {
+    // Download the "Short" file
+    window.open("https://www.facebook.com/dideysosa.morales/", "_blank");
+  };
+
+  const handleChange: UploadProps["onChange"] = ({
+    fileList: newfileListAK,
+  }) => {
+    console.log(fileListAK);
+    setfileListAK(newfileListAK);
+  };
+
+  const handleChangeTP: UploadProps["onChange"] = ({
+    fileList: newfileListTP,
+  }) => {
+    console.log(fileListTP);
+    setfileListTP(newfileListTP);
+  };
   const onManualBtnClick = () => {
     setIsManualModalOpen(true);
   };
@@ -212,12 +257,14 @@ const App: React.FC = () => {
                 shape="circle"
                 icon={<GithubOutlined />}
                 size={"large"}
+                onClick={handleGithubRepo}
               />
               <Button
                 type="primary"
                 shape="circle"
                 icon={<FacebookOutlined />}
                 size={"large"}
+                onClick={handleFBLink}
               />
             </>
           }
@@ -228,7 +275,17 @@ const App: React.FC = () => {
         </Modal>
         <Modal
           style={{}}
-          title="View the Supported Formatted Papers Here"
+          title={
+            <>
+              <p>View the supported formats here</p>
+              <Button type="link" size={"large"} onClick={handleDownloadShort}>
+                Download Short
+              </Button>
+              <Button type="link" size={"large"} onClick={handleDownloadLong}>
+                Download Long
+              </Button>
+            </>
+          }
           open={isFormattedModalOpen}
           closable={true}
           onOk={handleFormattedOk}
@@ -285,14 +342,174 @@ const App: React.FC = () => {
         </Modal>
         <Modal
           style={{}}
+          title="Upload Your Answer Key"
+          open={isUploadAnswerKeyOpen}
+          onOk={handleUploadAnswerKeyOk}
+          onCancel={handleUploadAnswerKeyCancel}
+          closable={true}
+          footer={[
+            <Button
+              disabled={fileListAK.length < 1 || fileListAK.length > 1}
+              key="back"
+            >
+              Parse Answers
+            </Button>,
+          ]}
+        >
+          <p>Only one answer key may be uploaded at a time</p>
+          <p>
+            Only our supported formats with 6 landmarks can be uploaded at the
+            moment
+          </p>
+          <Upload
+            beforeUpload={handleBeforeUpload}
+            name="images"
+            customRequest={async ({ file: fileItem, onSuccess }) => {
+              console.log(fileItem, fileListAK);
+              const formData = new FormData();
+              formData.append("images", fileItem);
+              const response = await fetch(
+                "http://127.0.0.1:8000/process_images",
+                {
+                  method: "POST",
+                  body: formData,
+                }
+              );
+              const data = await response.json();
+              const updatedfileLinksAK = { ...fileLinksAK };
+              updatedfileLinksAK[(fileItem as UploadFile).uid] = data[0];
+              setfileLinksAK(updatedfileLinksAK);
+              console.log(data[0]);
+              onSuccess!("ok");
+            }}
+            listType="picture-card"
+            fileList={fileListAK}
+            onPreview={handlePreview}
+            onChange={handleChange}
+            onRemove={async (file) => {
+              const body = fileLinksAK[file.uid];
+              console.log(body);
+
+              const response = await fetch(
+                "http://127.0.0.1:8000/delete-images",
+                {
+                  method: "POST",
+                  body: JSON.stringify(body),
+                  headers: { "Content-Type": "application/json" },
+                }
+              );
+              const data = await response.json();
+              console.log(data[0]);
+              return true;
+            }}
+            //disabled={fileListAK?.some((fileItem) => fileItem.status === "done")}
+          >
+            {fileListAK.length >= 8 ? null : uploadButton}
+          </Upload>
+          {previewImage && (
+            <Image
+              wrapperStyle={{ display: "none" }}
+              preview={{
+                visible: previewOpen,
+                onVisibleChange: (visible) => setPreviewOpen(visible),
+                afterOpenChange: (visible) => !visible && setPreviewImage(""),
+              }}
+              src={previewImage}
+            />
+          )}
+        </Modal>
+        <Modal
+          style={{}}
           title="Upload Your Test Papers Here"
           open={isUploadTestPaperOpen}
           onOk={handleUploadTestPaperOk}
           onCancel={handleUploadTestPaperCancel}
+          closable={true}
+          footer={[
+            <Button disabled={fileListTP.length < 1} key="back">
+              Parse Tests
+            </Button>,
+          ]}
         >
           <p>Some contents...</p>
           <p>Some contents...</p>
+          <Upload
+            beforeUpload={handleBeforeUpload}
+            name="images"
+            multiple={true}
+            customRequest={async ({ file: fileItem, onSuccess }) => {
+              console.log(fileItem, fileListTP);
+              const formData = new FormData();
+              formData.append("images", fileItem);
+              const response = await fetch(
+                "http://127.0.0.1:8000/process_images",
+                {
+                  method: "POST",
+                  body: formData,
+                }
+              );
+              const data = await response.json();
+
+              // Update fileLinksTP to store the unique link for each uploaded file
+              setfileLinksTP((prevFileLinks) => ({
+                ...prevFileLinks,
+                [(fileItem as UploadFile).uid]: data[0], // Store the full data object for each file UID
+              }));
+
+              console.log(data);
+              onSuccess!("ok");
+            }}
+            listType="picture-card"
+            fileList={fileListTP}
+            onPreview={handlePreview}
+            onChange={handleChangeTP}
+            onRemove={async (file) => {
+              // Retrieve the specific data related to the file to be deleted
+              const body = fileLinksTP[file.uid];
+              if (!body) {
+                console.error("No data found for this file UID:", file.uid);
+                return false;
+              }
+
+              console.log(body);
+
+              const response = await fetch(
+                "http://127.0.0.1:8000/delete-images",
+                {
+                  method: "POST",
+                  body: JSON.stringify(body),
+                  headers: { "Content-Type": "application/json" },
+                }
+              );
+
+              const data = await response.json();
+              console.log(data);
+
+              // Optionally, clean up fileLinksTP by removing the deleted file’s entry
+              setfileLinksTP((prevFileLinks) => {
+                const updatedLinks = { ...prevFileLinks };
+                delete updatedLinks[file.uid];
+                return updatedLinks;
+              });
+
+              return true; // Return true to proceed with Ant Design's removal behavior
+            }}
+          >
+            {fileListTP.length >= 35 ? null : uploadButton}
+          </Upload>
+          {previewImage && (
+            <Image
+              wrapperStyle={{ display: "none" }}
+              preview={{
+                visible: previewOpen,
+                onVisibleChange: (visible) => setPreviewOpen(visible),
+                afterOpenChange: (visible) => !visible && setPreviewImage(""),
+              }}
+              src={previewImage}
+            />
+          )}
         </Modal>
+
         <Modal
           style={{}}
           title="Grade Up The Tests"
