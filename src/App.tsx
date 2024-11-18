@@ -1,13 +1,9 @@
 import React, { useState } from "react";
 import {
   PlusOutlined,
-  DownloadOutlined,
   GithubOutlined,
   FacebookOutlined,
-  CustomerServiceOutlined,
-  CommentOutlined,
   QuestionCircleOutlined,
-  SyncOutlined,
 } from "@ant-design/icons";
 
 import {
@@ -15,7 +11,6 @@ import {
   Menu,
   theme,
   Button,
-  ConfigProvider,
   Flex,
   FloatButton,
   Modal,
@@ -24,7 +19,7 @@ import {
 } from "antd";
 import type { GetProp, UploadFile, UploadProps } from "antd";
 import { RcFile } from "antd/lib/upload";
-import { AnswerKeyForm, Test, TestItem } from "./AnswerKeyForm";
+import { AnswerKeyForm, Test } from "./AnswerKeyForm";
 
 const sampleData: { tests: Test[] } = {
   tests: [
@@ -105,7 +100,7 @@ const getBase64 = (file: FileType): Promise<string> =>
     reader.onload = () => resolve(reader.result as string);
     reader.onerror = (error) => reject(error);
   });
-const { Header, Content, Footer } = Layout;
+const { Header, Content } = Layout;
 
 const items = new Array(1).fill(null).map((_, index) => ({
   key: String(index + 1),
@@ -121,7 +116,7 @@ const App: React.FC = () => {
   const [isUploadTestPaperOpen, setIsUploadTestPaperOpen] = useState(false);
   const [isGradeOpen, setIsGradeOpen] = useState(false);
   const [isConfirmAKOpen, setIsConfirmAKOpen] = useState(false);
-  const [isDisabled, setIsDisabled] = useState(false);
+
   const [fileListAK, setfileListAK] = useState<UploadFile[]>([]);
   const [fileLinksAK, setfileLinksAK] = useState<FileMap>({});
   const [fileListTP, setfileListTP] = useState<UploadFile[]>([]);
@@ -468,7 +463,7 @@ const App: React.FC = () => {
               formData.append("images", fileItem);
               formData.append("uid", uid);
               const response = await fetch(
-                "https://a894-122-2-102-220.ngrok-free.app/process_images",
+                "https://cfe1-122-2-102-220.ngrok-free.app/process_images",
                 {
                   method: "POST",
                   body: formData,
