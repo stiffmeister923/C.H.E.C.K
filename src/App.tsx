@@ -24,6 +24,75 @@ import {
 } from "antd";
 import type { GetProp, UploadFile, UploadProps } from "antd";
 import { RcFile } from "antd/lib/upload";
+import { AnswerKeyForm, Test, TestItem } from "./AnswerKeyForm";
+
+const sampleData: { tests: Test[] } = {
+  tests: [
+    {
+      test_number: 1,
+      test_type: "Multiple Choice",
+      total_points: 30,
+      correct_points: null,
+      full_text:
+        "1. A 6.b 11. 9 2. B 7.C 12. d 3. c 8.2 13. b 4. I 9.C 14. c 5. A 10. a 15. 9",
+      question_answer_pairs: [
+        { question_number: 1, answer: "A" },
+        { question_number: 2, answer: "B" },
+        { question_number: 3, answer: "C" },
+        { question_number: 4, answer: "I" },
+        { question_number: 5, answer: "A" },
+        { question_number: 6, answer: "B" },
+        { question_number: 7, answer: "C" },
+        { question_number: 8, answer: "2" },
+        { question_number: 9, answer: "C" },
+        { question_number: 10, answer: "A" },
+        { question_number: 11, answer: "9" },
+        { question_number: 12, answer: "D" },
+        { question_number: 13, answer: "B" },
+        { question_number: 14, answer: "C" },
+        { question_number: 15, answer: "9" },
+      ],
+    },
+    {
+      test_number: 2,
+      test_type: "true or False",
+      total_points: 10,
+      correct_points: null,
+      full_text:
+        "1. true 6. F 2. False 7. U f 3. TRUE 8. f 4. FALSE 9. 5. T 10. t",
+      question_answer_pairs: [
+        { question_number: 1, answer: "TRUE" },
+        { question_number: 2, answer: "FALSE" },
+        { question_number: 3, answer: "TRUE" },
+        { question_number: 4, answer: "FALSE" },
+        { question_number: 6, answer: "F" },
+        { question_number: 7, answer: "UF" },
+        { question_number: 8, answer: "F" },
+        { question_number: 9, answer: "5.T" },
+        { question_number: 10, answer: "T" },
+      ],
+    },
+    {
+      test_number: 3,
+      test_type: "Matching Type",
+      total_points: 10,
+      correct_points: null,
+      full_text: "1. A 6.C 2. E 7.B 3. F 8.U 4. H 9.G 5. D 10. I",
+      question_answer_pairs: [
+        { question_number: 1, answer: "A" },
+        { question_number: 2, answer: "E" },
+        { question_number: 3, answer: "F" },
+        { question_number: 4, answer: "H" },
+        { question_number: 5, answer: "D" },
+        { question_number: 6, answer: "C" },
+        { question_number: 7, answer: "B" },
+        { question_number: 8, answer: "U" },
+        { question_number: 9, answer: "G" },
+        { question_number: 10, answer: "I" },
+      ],
+    },
+  ],
+};
 
 type FileMap = {
   [key: string]: string[];
@@ -51,11 +120,13 @@ const App: React.FC = () => {
   const [isUploadAnswerKeyOpen, setIsUploadAnswerKeyOpen] = useState(false);
   const [isUploadTestPaperOpen, setIsUploadTestPaperOpen] = useState(false);
   const [isGradeOpen, setIsGradeOpen] = useState(false);
+  const [isConfirmAKOpen, setIsConfirmAKOpen] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [fileListAK, setfileListAK] = useState<UploadFile[]>([]);
   const [fileLinksAK, setfileLinksAK] = useState<FileMap>({});
   const [fileListTP, setfileListTP] = useState<UploadFile[]>([]);
   const [fileLinksTP, setfileLinksTP] = useState<FileMap>({});
+  const [answerKeys, setAnswerKeys] = useState<Test[]>([]);
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -168,8 +239,33 @@ const App: React.FC = () => {
   const handleGradeOk = () => {
     setIsGradeOpen(false);
   };
+
   const handleGradeCancel = () => {
     setIsGradeOpen(false);
+  };
+
+  const onSubmit = (values: { [key: string]: string }): void => {
+    const updatedTests: Test[] = answerKeys.map((test) => {
+      return {
+        ...test,
+        question_answer_pairs: test.question_answer_pairs.map((testItem) => {
+          return {
+            ...testItem,
+            answer: values[`${test.test_number}-${testItem.question_number}`],
+          };
+        }),
+      };
+    });
+    console.log(updatedTests);
+    setAnswerKeys(updatedTests);
+    setIsConfirmAKOpen(false);
+  };
+
+  const onParse = () => {
+    // Call backend to parse answer key
+    setAnswerKeys(sampleData.tests);
+    setIsUploadAnswerKeyOpen(false);
+    setIsConfirmAKOpen(true);
   };
   const handleBeforeUpload = (file: RcFile): boolean => {
     const maxSizeMB = 5; // Set the maximum size in MB
@@ -351,6 +447,7 @@ const App: React.FC = () => {
             <Button
               disabled={fileListAK.length < 1 || fileListAK.length > 1}
               key="back"
+              onClick={onParse}
             >
               Parse Answers
             </Button>,
@@ -367,9 +464,11 @@ const App: React.FC = () => {
             customRequest={async ({ file: fileItem, onSuccess }) => {
               console.log(fileItem, fileListAK);
               const formData = new FormData();
+              const uid = (fileItem as UploadFile).uid;
               formData.append("images", fileItem);
+              formData.append("uid", uid);
               const response = await fetch(
-                "http://127.0.0.1:8000/process_images",
+                "https://a894-122-2-102-220.ngrok-free.app/process_images",
                 {
                   method: "POST",
                   body: formData,
@@ -519,6 +618,16 @@ const App: React.FC = () => {
         >
           <p>Some contents...</p>
           <p>Some contents...</p>
+        </Modal>
+        <Modal
+          style={{}}
+          title="Confirm Answer Key"
+          open={isConfirmAKOpen}
+          footer=""
+          //onOk={handleGradeOk}
+          //onCancel={handleGradeCancel}
+        >
+          <AnswerKeyForm tests={answerKeys} onSubmit={onSubmit} />
         </Modal>
       </Flex>
     </Layout>
