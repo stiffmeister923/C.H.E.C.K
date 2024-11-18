@@ -463,7 +463,7 @@ const App: React.FC = () => {
               formData.append("images", fileItem);
               formData.append("uid", uid);
               const response = await fetch(
-                "https://cfe1-122-2-102-220.ngrok-free.app/process_images",
+                "https://a894-122-2-102-220.ngrok-free.app/process_images",
                 {
                   method: "POST",
                   body: formData,
