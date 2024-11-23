@@ -1,6 +1,42 @@
 import React from "react";
 import { Button, Form, Input } from "antd";
 
+export type AnswerKeyTest = [TestInfo];
+export type GradedTestResult = {
+  updated_papers: AnswerKeyTest;
+};
+export type GradeTest = {
+  answer_key: TestInfo;
+  test_papers: TestInfo[];
+};
+export type Annotation = {
+  box: [];
+  text: string;
+};
+export type TestInfo = {
+  original_url: string;
+  generated_uid: number;
+  original_size: [];
+  full_data: [Annotation];
+  full_section: string;
+  Question_pair: {
+    image_name: string;
+    student_info: {
+      university: string;
+      college: string;
+      department: string;
+      exam_type: string;
+      subject_code: string;
+      subject_name: string;
+      name: string;
+      date: string;
+      program_code: string;
+      total_score: number | null;
+    };
+    tests: Test[];
+  };
+};
+
 export type Test = {
   test_number: number;
   test_type: string;
