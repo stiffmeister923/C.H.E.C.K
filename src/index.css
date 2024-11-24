@@ -10,6 +10,11 @@
   --header-font: "Poppins", sans-serif;
 }
 
+.answer-key-img .ant-image,
+.answer-key-img .ant-image img {
+  height: 100%;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -17,6 +22,35 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: repeating-linear-gradient(
+      90deg,
+      hsla(196, 0%, 20%, 0.15) 0px,
+      hsla(196, 0%, 20%, 0.15) 1px,
+      transparent 1px,
+      transparent 96px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      hsla(196, 0%, 20%, 0.15) 0px,
+      hsla(196, 0%, 20%, 0.15) 1px,
+      transparent 1px,
+      transparent 96px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      hsla(196, 0%, 20%, 0.25) 0px,
+      hsla(196, 0%, 20%, 0.25) 1px,
+      transparent 1px,
+      transparent 12px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      hsla(196, 0%, 20%, 0.25) 0px,
+      hsla(196, 0%, 20%, 0.25) 1px,
+      transparent 1px,
+      transparent 12px
+    ),
+    linear-gradient(90deg, rgb(24, 25, 26), rgb(24, 25, 26));
 }
 
 code {

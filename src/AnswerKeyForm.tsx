@@ -15,7 +15,7 @@ export type Annotation = {
 };
 export type TestInfo = {
   original_url: string;
-  generated_uid: number;
+  generated_uid: string;
   original_size: [];
   full_data: [Annotation];
   full_section: string;
@@ -81,7 +81,7 @@ export const AnswerKeyForm = ({
               return (
                 <Form.Item
                   name={`${test.test_number}-${testItem.question_number}`}
-                  label={`Question ${testItem.question_number}`}
+                  label={`${testItem.question_number}`}
                   // value={testItem.answer || null}
                   required={true}
                 >
