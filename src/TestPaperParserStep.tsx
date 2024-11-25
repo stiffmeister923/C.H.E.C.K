@@ -1,7 +1,7 @@
-import { Col, Flex, Image, Row, Skeleton, Space, Spin, Splitter } from "antd";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Col, Image, Row, Spin } from "antd";
+import { useCallback, useMemo, useState } from "react";
 import { FileData } from "./types";
-import { AnswerKeyForm, AnswerKeyTest, Test, TestInfo } from "./AnswerKeyForm";
+import { AnswerKeyForm, TestInfo } from "./AnswerKeyForm";
 
 export const TestPaperParserStep = ({
   testPaperFileList,
@@ -14,7 +14,6 @@ export const TestPaperParserStep = ({
   onParse: (keys: TestInfo) => void;
   onSubmit: (uid: string, values: { [key: string]: string }) => void;
 }) => {
-  const [sizes, setSizes] = useState<(number | string)[]>(["40%", "60%"]);
   const [selectedTestPaper, setSelectedTestPaper] = useState("");
 
   const getFileUrl = useCallback((item: FileData) => {
@@ -51,20 +50,6 @@ export const TestPaperParserStep = ({
       : null;
   }, [selectedTestPaper, parsedTestPaper]);
 
-  const fileUrl = useMemo(() => {
-    // const TestPaperData = testPaperFileList.data || {};
-    // return Object.keys(TestPaperData).reduce((url, currentKey) => {
-    //   if (
-    //     typeof TestPaperData[currentKey] === "object" &&
-    //     "original_image" in TestPaperData[currentKey]
-    //   ) {
-    //     return TestPaperData[currentKey].original_image;
-    //   }
-    //   return url;
-    // }, "");
-
-    return "";
-  }, [testPaperFileList]);
   console.log("parsedTestPaper", parsedTestPaper);
   console.log("selectedParsedTestPaper", selectedParsedTestPaper);
 

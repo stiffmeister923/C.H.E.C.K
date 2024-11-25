@@ -30,10 +30,7 @@ import {
   Test,
   TestInfo,
   GradeTest,
-  GradedTestResult,
 } from "./AnswerKeyForm";
-import { parse } from "path";
-import { request } from "http";
 
 const { Title } = Typography;
 
@@ -364,19 +361,11 @@ const App: React.FC = () => {
     setIsFormatedModalOpen(false);
   };
 
-  const onUploadAnswerKeyBtnClick = () => {
-    setIsUploadAnswerKeyOpen(true);
-  };
-
   const handleUploadAnswerKeyOk = () => {
     setIsUploadAnswerKeyOpen(false);
   };
   const handleUploadAnswerKeyCancel = () => {
     setIsUploadAnswerKeyOpen(false);
-  };
-
-  const onUploadTestPaperBtnClick = () => {
-    setIsUploadTestPaperOpen(true);
   };
 
   const handleUploadTestPaperOk = () => {

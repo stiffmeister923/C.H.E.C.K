@@ -1,5 +1,5 @@
-import { Col, Flex, Image, Row, Skeleton, Space, Spin, Splitter } from "antd";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Col, Image, Row, Spin } from "antd";
+import { useMemo } from "react";
 import { FileData } from "./types";
 import { AnswerKeyForm, TestInfo } from "./AnswerKeyForm";
 
@@ -14,8 +14,6 @@ export const AnswerKeyParserStep = ({
   onParse: (keys: TestInfo) => void;
   onSubmit: (values: { [key: string]: string }) => void;
 }) => {
-  const [sizes, setSizes] = useState<(number | string)[]>(["40%", "60%"]);
-
   const fileUrl = useMemo(() => {
     const answerKeyData = answerKeyFile.data || {};
     return Object.keys(answerKeyData).reduce((url, currentKey) => {
