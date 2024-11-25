@@ -1,7 +1,8 @@
-import React from "react";
-import { Button, Form, Input } from "antd";
+import React, { useEffect } from "react";
+import { Button, Form, Input, message } from "antd";
 
-export type AnswerKeyTest = [TestInfo];
+export type AnswerKeyTest = TestInfo[];
+
 export type GradedTestResult = {
   updated_papers: AnswerKeyTest;
 };
@@ -66,12 +67,16 @@ export const AnswerKeyForm = ({
     return values;
   }, {} as { [key: string]: string });
 
+  useEffect(() => {
+    form.setFieldsValue(initialValues);
+  }, [form, initialValues]);
+
   return (
     <Form
       form={form}
       style={{ maxWidth: 600 }}
       onFinish={onSubmit}
-      initialValues={initialValues}
+      // initialValues={initialValues}
     >
       {tests.map((test) => {
         return (
@@ -93,7 +98,13 @@ export const AnswerKeyForm = ({
         );
       })}
       <Form.Item label={null}>
-        <Button type="primary" htmlType="submit">
+        <Button
+          type="primary"
+          htmlType="submit"
+          onClick={() => {
+            message.success("Answers have been updated");
+          }}
+        >
           Submit
         </Button>
       </Form.Item>

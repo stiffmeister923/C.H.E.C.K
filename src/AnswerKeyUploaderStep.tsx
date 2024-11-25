@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Button, Flex, Upload } from "antd";
+import { Button, Flex, Upload, Image, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import ImgCrop from "antd-img-crop";
-import type { UploadFile } from "antd";
 import { RcFile } from "antd/es/upload";
 import { FileData } from "./types";
 import { UploadProps } from "antd/lib/upload";
-
+import type { GetProp, UploadFile } from "antd";
+import "./index.css";
 export const AnswerKeyUploaderStep = ({
   fileData,
   fileList,
@@ -20,6 +20,16 @@ export const AnswerKeyUploaderStep = ({
   onUpload: (fileData: FileData) => void;
   onRemove: () => void;
 }) => {
+  type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
+  const getBase64 = (file: FileType): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewOpen, setPreviewOpen] = useState(false);
   const handleBeforeUpload = (file: RcFile): boolean => {
     const maxSizeMB = 5; // Set the maximum size in MB
     if (file.size / 1024 / 1024 > maxSizeMB) {
@@ -28,39 +38,73 @@ export const AnswerKeyUploaderStep = ({
     }
     return true;
   };
+  const handlePreview = async (file: UploadFile) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj as FileType);
+    }
+
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
+  };
   return (
     <Flex justify="center" align="center" style={{ height: "100%" }}>
-      <ImgCrop rotationSlider>
+      <ImgCrop rotationSlider aspectSlider showGrid showReset>
         <Upload
           beforeUpload={handleBeforeUpload}
           name="images"
-          customRequest={async ({ file: fileItem, onSuccess }) => {
+          customRequest={async ({ file: fileItem, onSuccess, onError }) => {
             const formData = new FormData();
             const uid = (fileItem as UploadFile).uid;
             formData.append("images", fileItem);
             formData.append("uid", uid);
-            const response = await fetch(
-              "http://127.0.0.1:8000/process_images",
-              {
-                method: "POST",
-                body: formData,
+
+            try {
+              const response = await fetch(
+                "https://eminent-gazelle-vital.ngrok-free.app/process_images",
+                {
+                  method: "POST",
+                  body: formData,
+                }
+              );
+
+              // Check if the HTTP response was successful
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
               }
-            );
-            const data = await response.json();
-            onUpload(data[0]);
-            onSuccess!("ok");
+
+              const data = await response.json();
+
+              // Check if the server returned a status of "error"
+              if (data[0]?.status === "error") {
+                message.error(
+                  `Processing failed for image : ${
+                    data[0].error || "Unknown error occurred"
+                  }`
+                );
+                onError?.(new Error(data.error || "Processing error"));
+                return;
+              }
+
+              // If the response status is successful
+              onUpload(data[0]);
+              onSuccess?.("ok");
+              message.success(`Image uploaded and processed successfully!`);
+            } catch (error) {
+              message.error(`Failed to process image. Please try again.`);
+              onError?.(error as any);
+            }
           }}
           listType="picture-card"
           maxCount={1}
           fileList={fileList}
           // fileList={fileListAK}
-          // onPreview={handlePreview}
+          onPreview={handlePreview}
           onChange={onChange}
           onRemove={async () => {
             const body = fileData;
 
             const response = await fetch(
-              "http://127.0.0.1:8000/delete-images",
+              "https://eminent-gazelle-vital.ngrok-free.app/delete-images",
               {
                 method: "POST",
                 body: JSON.stringify(body),
@@ -70,8 +114,11 @@ export const AnswerKeyUploaderStep = ({
 
             if (response.ok) {
               onRemove();
+              message.success(`Image deleted successfully!`);
             } else {
-              console.error("Failed to delete image on server.");
+              message.error(
+                `Failed to delete image or image might not be in the server`
+              );
             }
 
             const data = await response.json();
@@ -82,13 +129,30 @@ export const AnswerKeyUploaderStep = ({
           //disabled={fileListAK?.some((fileItem) => fileItem.status === "done")}
         >
           <Button
-            style={{ background: "none", border: 0 }}
+            //className=".btn-grad"
+            style={{
+              background: "none",
+              border: 0,
+              height: "100%",
+              color: "white",
+            }}
             icon={<PlusOutlined />}
           >
             Upload
           </Button>
         </Upload>
       </ImgCrop>
+      {previewImage && (
+        <Image
+          wrapperStyle={{ display: "none" }}
+          preview={{
+            visible: previewOpen,
+            onVisibleChange: (visible) => setPreviewOpen(visible),
+            afterOpenChange: (visible) => !visible && setPreviewImage(""),
+          }}
+          src={previewImage}
+        />
+      )}
     </Flex>
   );
 };

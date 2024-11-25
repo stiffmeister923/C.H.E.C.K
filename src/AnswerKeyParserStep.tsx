@@ -7,10 +7,12 @@ export const AnswerKeyParserStep = ({
   answerKeyFile,
   parsedAnswerKey,
   onParse,
+  onSubmit,
 }: {
   answerKeyFile: FileData;
   parsedAnswerKey: TestInfo;
   onParse: (keys: TestInfo) => void;
+  onSubmit: (values: { [key: string]: string }) => void;
 }) => {
   const [sizes, setSizes] = useState<(number | string)[]>(["40%", "60%"]);
 
@@ -75,7 +77,7 @@ export const AnswerKeyParserStep = ({
         >
           <AnswerKeyForm
             tests={parsedAnswerKey.Question_pair.tests}
-            onSubmit={(values) => console.log(values)}
+            onSubmit={onSubmit}
           />
         </Col>
       )}
