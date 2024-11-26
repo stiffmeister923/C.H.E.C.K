@@ -93,6 +93,7 @@ export const TestPaperParserStep = ({
           <Col
             style={{
               overflowY: "scroll",
+
               height: "calc(100vh - 330px)",
               padding: "48px",
               background: "white",

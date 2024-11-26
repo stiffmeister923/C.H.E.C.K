@@ -73,6 +73,7 @@ export const AnswerKeyForm = ({
 
   return (
     <Form
+      className="edit-pairs"
       form={form}
       style={{ maxWidth: 600 }}
       onFinish={onSubmit}
@@ -105,7 +106,7 @@ export const AnswerKeyForm = ({
             message.success("Answers have been updated");
           }}
         >
-          Submit
+          Submit Changes
         </Button>
       </Form.Item>
     </Form>

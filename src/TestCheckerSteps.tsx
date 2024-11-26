@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useEffect } from "react";
 import { Button, message, Steps, theme, UploadProps, Image } from "antd";
 import { AnswerKeyUploaderStep } from "./AnswerKeyUploaderStep";
 import { FileData } from "./types";
@@ -126,7 +126,7 @@ export const TestChecker = () => {
     setCurrent(current - 1);
     //console.log(testPaperFile, testPaperFileList);
   };
-  const loadPictures = () => {
+  const loadPictures = useCallback(() => {
     const data = checkedTestPapers;
 
     setTimeout(() => {
@@ -169,7 +169,7 @@ export const TestChecker = () => {
 
       fetchData();
     }, 0);
-  };
+  }, [checkedTestPapers]);
 
   const exportGrades = () => {
     const data = checkedTestPapers;
@@ -427,8 +427,39 @@ export const TestChecker = () => {
   };
 
   const preventNext = useMemo(() => {
-    return current === 0 && !answerKeyFile;
-  }, [current, answerKeyFile]);
+    console.log("Current step:", current);
+
+    if (current === 0) {
+      console.log("Checking if answerKeyFile exists:", answerKeyFile);
+      // Stage 0: Check if answerKeyFile is missing
+      return !answerKeyFile;
+    } else if (current === 2) {
+      //console.log("Checking if test papers are available:", testPaperFile);
+      if (!testPaperFile || testPaperFile.length === 0) {
+        //console.log("No test papers available.");
+        return true; // Prevent going to the next step if there are no test papers
+      }
+
+      // console.log("Checking if all test papers are parsed:", testPaperFile);
+      //console.log("Parsed Test Papers:", parsedTestPapers);
+
+      // Stage 2: Check if all test papers have been parsed
+      // return testPaperFile?.some(
+      //   (file) =>
+      //     !parsedTestPapers?.some((paper) => paper?.generated_uid === file?.uid)
+      // );
+    } else if (current === 3) {
+      // Stage 3: Check if parsedTestPapers is empty
+      return !parsedTestPapers?.length;
+    }
+    return false; // Default: No restrictions for other stages
+  }, [current, answerKeyFile, testPaperFile, parsedTestPapers]);
+
+  useEffect(() => {
+    if (checkedTestPapers && Object.keys(checkedTestPapers).length > 0) {
+      loadPictures(); // Call loadPictures once checkedTestPapers state is updated
+    }
+  }, [checkedTestPapers, loadPictures]);
 
   return (
     <>
@@ -436,7 +467,7 @@ export const TestChecker = () => {
         className="check-steps"
         current={current}
         items={items}
-        style={{ width: "100%" }}
+        style={{ width: "100%", padding: "0px 40px 0px 40px" }}
       />
       <div style={contentStyle}>{steps[current].content}</div>
       <div
@@ -444,7 +475,13 @@ export const TestChecker = () => {
         style={{ marginTop: 24, padding: "0px 0px 24px 0px" }}
       >
         {current > 0 && (
-          <Button style={{ margin: "0 8px" }} onClick={() => prev()}>
+          <Button
+            style={{ margin: "0 8px" }}
+            onClick={() => {
+              prev();
+              //console.log("Previous: ", current);
+            }}
+          >
             Previous
           </Button>
         )}
@@ -454,6 +491,7 @@ export const TestChecker = () => {
             style={{ color: "white" }}
             onClick={() => {
               ////console.log(answerKeyFile, parsedAnswerKey);
+              //console.log("Next: ", current);
               if (
                 current === 0 &&
                 answerKeyFile?.uid !== parsedAnswerKey?.generated_uid
@@ -461,17 +499,18 @@ export const TestChecker = () => {
                 onAnswerKeyParse();
               } else if (
                 current === 2 &&
-                testPaperFile?.every(
+                testPaperFile?.some(
                   (file) =>
                     !parsedTestPapers?.some(
                       (paper) => paper?.generated_uid === file?.uid
                     )
-                )
+                ) && // Check if at least one test paper file hasn't been parsed yet
+                testPaperFile.length !== 0
               ) {
+                console.log("SO FUCKING TRUE");
                 onTestPaperParse();
-              } else if (current === 3 && parsedTestPapers) {
+              } else if (current === 3 && parsedTestPapers.length) {
                 gradeAKTP();
-                loadPictures();
               }
               ////console.log(parsedTestPapers);
               next();

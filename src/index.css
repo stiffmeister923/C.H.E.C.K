@@ -104,6 +104,8 @@ h2 {
 
 .ant-steps-item-title {
   color: white;
+  font-family: var(--header-font);
+  font-weight: 300;
 }
 
 .ant-steps.check-steps .ant-steps-item-process .ant-steps-item-icon {
@@ -123,7 +125,19 @@ h2 {
   .ant-steps-item-icon
   .ant-steps-icon {
   color: #25391d;
+  font-family: var(--header-font);
+  font-weight: 600;
+  font-size: 14px;
 }
+
+/* .ant-steps.check-steps
+  .ant-steps-item-process
+  .ant-steps-item-icon
+  {
+  display:flex;
+  align-items: center;
+  justify-content: center;
+} */
 
 .ant-steps.check-steps .ant-steps-item-wait .ant-steps-item-icon {
   background-color: #636661;
@@ -180,10 +194,23 @@ h2 {
   border: 1px dashed #e7eee0;
 }
 
+.ant-upload-wrapper .ant-upload-list {
+  padding: 0px 40px 0px 40px;
+}
+
+.ant-upload-wrapper .ant-upload-list .ant-upload .ant-btn span {
+  font-family: var(--header-font);
+  font-weight: 400;
+  font-size: 14px;
+}
+
 .ant-upload-wrapper
   .ant-upload-list-item-container
   .ant-upload-list-item
   .ant-upload-list-item-thumbnail {
+  font-family: var(--header-font);
+  font-weight: 400;
+  font-size: 14px;
   color: #e7eee0;
 }
 
@@ -191,16 +218,58 @@ h2 {
   .ant-upload-list-item-container
   .ant-upload-list-item
   .ant-upload-list-item-name {
+  font-family: var(--header-font);
+  font-weight: 400;
+  font-size: 14px;
   color: #e7eee0;
 }
 
 .ant-modal .ant-modal-content .ant-modal-footer .ant-btn {
   background: rgb(24, 25, 26);
   color: #e7eee0;
+  font-family: var(--header-font);
+  font-weight: 400;
+}
+
+.ant-modal .ant-modal-content .ant-modal-header .ant-modal-title {
+  font-family: var(--header-font);
+  font-weight: 600;
+  font-size: 24px;
+}
+
+.ant-modal .ant-modal-content .ant-modal-body p,
+.ant-modal .ant-modal-content .ant-modal-body p .ant-typography {
+  font-family: var(--header-font);
+  font-weight: 300;
+  font-size: 14px;
+}
+.ant-modal .ant-modal-content .ant-modal-body .ant-btn {
+  background: rgb(24, 25, 26);
+}
+
+.ant-modal .ant-modal-content .ant-modal-body .ant-btn span {
+  font-family: var(--header-font);
+  font-weight: 400;
+  font-size: 14px;
+  color: #e7eee0;
+}
+
+.ant-modal .ant-modal-content .ant-modal-body .ant-btn:hover {
+  border: 1px solid #1c271a;
+  background: #e7eee0;
+}
+
+.ant-modal .ant-modal-content .ant-modal-body .ant-btn:hover span {
+  color: #1c271a; /* Change text color on hover */
 }
 
 .ant-modal .ant-modal-content .ant-modal-footer .ant-btn:hover {
   border: 1px solid #1c271a;
+  background: #e7eee0;
+}
+
+.ant-modal .ant-modal-content .ant-modal-footer .ant-btn:hover span {
+  color: #1c271a;
 }
 
 .ant-float-btn.user-manual {
@@ -220,8 +289,24 @@ h2 {
 .ant-float-btn.formatted-papers {
   background: #e7eee0;
 }
-.ant-float-btn.formatted-papersl .ant-float-btn-body {
-  background: #1c271a;
+
+.ant-float-btn.formatted-papers .ant-float-btn-body:hover {
+  background: #c6e0ae;
+}
+
+.ant-float-btn.user-manual .ant-float-btn-body:hover {
+  background: #c6e0ae;
+}
+
+.ant-float-btn.user-manual
+  .ant-float-btn-body:hover
+  .ant-float-btn-content
+  .ant-float-btn-icon {
+  color: #1c271a;
+}
+
+.ant-float-btn.formatted-papers .ant-float-btn-body {
+  background: #e7eee0;
 }
 
 .ant-float-btn.formatted-papers
@@ -270,11 +355,89 @@ h2 {
 }
 
 .ant-layout-content .step-btn .ant-btn.ant-btn-default {
+  padding: 24px;
+  font-family: var(--header-font);
+  font-weight: 400;
   border: 1px solid #e7eee0;
 }
 
 .ant-layout-content .step-btn .ant-btn.ant-btn-default:hover {
-  background: #4d842e;
-  border: 1px solid #e7eee0;
+  background: #c6e0ae;
+  border: 1px solid #1c271a;
+}
+
+.ant-layout-content .step-btn .ant-btn.ant-btn-default:hover span {
+  color: #1c271a;
+}
+
+.ant-layout-content .step-btn .ant-btn.ant-btn-primary {
+  padding: 24px;
+  font-family: var(--header-font);
+  font-weight: 400;
+}
+
+.ant-layout-content .step-btn .ant-btn.ant-btn-primary:hover {
+  background: #c6e0ae;
+}
+
+.ant-layout-content .step-btn .ant-btn.ant-btn-primary:hover span {
+  color: #1c271a;
+}
+
+.edit-pairs
+  .ant-form-item
+  .ant-row
+  .ant-col.ant-form-item-label
+  .ant-form-item-required {
+  font-family: var(--header-font);
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.edit-pairs
+  .ant-form-item
+  .ant-row
+  .ant-col.ant-form-item-control
+  .ant-form-item-control-input
+  .ant-form-item-control-input-content
+  input {
+  font-family: var(--header-font);
+  font-size: 16px;
+  font-weight: 300;
+}
+
+.edit-pairs
+  .ant-form-item
+  .ant-row
+  .ant-col.ant-form-item-control
+  .ant-form-item-control-input
+  .ant-form-item-control-input-content
+  .ant-btn {
+  font-family: var(--header-font);
+  font-size: 16px;
+  font-weight: 300;
+  background: #1c271a;
   color: #e7eee0;
+}
+
+.edit-pairs
+  .ant-form-item
+  .ant-row
+  .ant-col.ant-form-item-control
+  .ant-form-item-control-input
+  .ant-form-item-control-input-content
+  .ant-btn:hover {
+  background: #c6e0ae;
+  border: 1px solid #1c271a;
+}
+
+.edit-pairs
+  .ant-form-item
+  .ant-row
+  .ant-col.ant-form-item-control
+  .ant-form-item-control-input
+  .ant-form-item-control-input-content
+  .ant-btn:hover
+  span {
+  color: #1c271a;
 }

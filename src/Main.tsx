@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Layout,
@@ -13,6 +13,7 @@ import {
   Image,
   Space,
   QRCode,
+  Tooltip,
 } from "antd";
 import { TestChecker } from "./TestCheckerSteps";
 
@@ -26,14 +27,12 @@ import {
   DownloadOutlined,
   LeftOutlined,
   RightOutlined,
-  RotateLeftOutlined,
-  RotateRightOutlined,
-  SwapOutlined,
   UndoOutlined,
   ZoomInOutlined,
   ZoomOutOutlined,
 } from "@ant-design/icons";
 import "./index.css";
+import Link from "antd/es/typography/Link";
 
 const { Title } = Typography;
 
@@ -53,11 +52,23 @@ const Main: React.FC = () => {
   const [current, setCurrent] = React.useState(0);
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
   const [isFormattedModalOpen, setIsFormatedModalOpen] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const {
     token: { borderRadiusLG },
   } = theme.useToken();
+  useEffect(() => {
+    // Show the tooltip as soon as the component mounts
+    setShowTooltip(true);
 
+    // Automatically hide the tooltip after 5 seconds
+    const timer = setTimeout(() => {
+      setShowTooltip(false);
+    }, 15000); // Tooltip visible for 5 seconds
+
+    // Cleanup the timer to avoid memory leaks
+    return () => clearTimeout(timer);
+  }, []);
   const onManualBtnClick = () => {
     setIsManualModalOpen(true);
   };
@@ -201,14 +212,23 @@ const Main: React.FC = () => {
         </Col>
       </Row>
       <FloatButton.Group shape="circle" style={{}}>
-        <FloatButton
-          className="user-manual"
-          type="primary"
-          shape="circle"
-          onClick={onManualBtnClick}
-          icon={<QuestionCircleOutlined />}
-          style={{ height: "7.5vh", width: "7.5vh", fontSize: "3vh" }}
-        />
+        <Tooltip
+          title="Click here to get started!"
+          open={showTooltip}
+          placement="top"
+        >
+          <FloatButton
+            className="user-manual"
+            type="primary"
+            shape="circle"
+            onClick={() => {
+              onManualBtnClick();
+              setShowTooltip(false);
+            }}
+            icon={<QuestionCircleOutlined />}
+            style={{ height: "7.5vh", width: "7.5vh", fontSize: "3vh" }}
+          />
+        </Tooltip>
         <FloatButton
           className="formatted-papers"
           shape="circle"
@@ -259,8 +279,11 @@ const Main: React.FC = () => {
           characters.
         </p>
         <p>
-          5. Give us your input here if you are a professor in DLSU-D or scan
-          the QR code provided below
+          5. Give us your input here in this{" "}
+          <Link href="https://forms.gle/2x866FniNcUghTS38" target="_blank">
+            Google Forms Link
+          </Link>
+          , if you are a professor in DLSU-D or scan the QR code provided below
         </p>
         <div
           style={{
@@ -284,10 +307,7 @@ const Main: React.FC = () => {
                 transform: { scale },
                 actions: {
                   onActive,
-                  onFlipY,
-                  onFlipX,
-                  onRotateLeft,
-                  onRotateRight,
+
                   onZoomOut,
                   onZoomIn,
                   onReset,
@@ -305,20 +325,6 @@ const Main: React.FC = () => {
                 />
                 <DownloadOutlined
                   onClick={onDownload}
-                  style={{ fontSize: "20px" }}
-                />
-                <SwapOutlined
-                  rotate={90}
-                  onClick={onFlipY}
-                  style={{ fontSize: "20px" }}
-                />
-                <SwapOutlined onClick={onFlipX} style={{ fontSize: "20px" }} />
-                <RotateLeftOutlined
-                  onClick={onRotateLeft}
-                  style={{ fontSize: "20px" }}
-                />
-                <RotateRightOutlined
-                  onClick={onRotateRight}
                   style={{ fontSize: "20px" }}
                 />
                 <ZoomOutOutlined
