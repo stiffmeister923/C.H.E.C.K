@@ -8,6 +8,7 @@ import { TestInfo, Test, AnswerKeyTest, GradeTest } from "./AnswerKeyForm";
 import { TestPaperUploaderStep } from "./TestPaperUploaderStep";
 import { TestPaperParserStep } from "./TestPaperParserStep";
 import { DownloadOutlined } from "@ant-design/icons";
+
 export const TestChecker = () => {
   const { token } = theme.useToken();
   const [current, setCurrent] = useState(0);
@@ -39,6 +40,7 @@ export const TestChecker = () => {
     } as TestInfo;
     updatedParsedAnswerKeys.Question_pair!.tests = updatedTests;
     setParsedAnswerKey(updatedParsedAnswerKeys);
+    //console.log(updatedParsedAnswerKeys);
   };
 
   const onSubmitTestPapers = (
@@ -47,15 +49,15 @@ export const TestChecker = () => {
   ): void => {
     const updatedTestPapers = [...parsedTestPapers];
     const testPaperToUpdateIndex = updatedTestPapers.findIndex((testPaper) => {
-      console.log(
-        testPaper.generated_uid,
-        uid,
-        testPaper.generated_uid === uid
-      );
+      // console.log(
+      //   testPaper.generated_uid,
+      //   uid,
+      //   testPaper.generated_uid === uid
+      // );
       return testPaper.generated_uid === uid;
     });
 
-    console.log(parsedTestPapers);
+    //console.log(parsedTestPapers);
 
     if (testPaperToUpdateIndex !== -1) {
       const updatedTests: Test[] = parsedTestPapers[
@@ -93,7 +95,7 @@ export const TestChecker = () => {
       const updatedFileData = testPaperItems?.filter(
         (fileDataItem: FileData) => fileDataItem.uid !== fileItem.uid
       );
-      console.log("updatedFileData", updatedFileData);
+      //console.log("updatedFileData", updatedFileData);
       return updatedFileData;
     });
     // setParsedTestPapers((testPaperItems) => {
@@ -122,12 +124,15 @@ export const TestChecker = () => {
 
   const prev = () => {
     setCurrent(current - 1);
-    console.log(testPaperFile, testPaperFileList);
+    //console.log(testPaperFile, testPaperFileList);
   };
   const loadPictures = () => {
     const data = checkedTestPapers;
+
     setTimeout(() => {
-      // API call here
+      // Start the loading message
+      const hideLoading = message.loading("Loading pictures...", 0); // 0 duration keeps it open indefinitely
+
       const fetchData = async () => {
         try {
           const response = await fetch(
@@ -144,20 +149,28 @@ export const TestChecker = () => {
           if (response.ok) {
             const { images } = await response.json();
             if (images && images.length > 0) {
-              // Assuming `setImageList` is a React state setter to store image data
+              message.success("Finished loading images");
               setImageList(images);
-            } // Save the images for rendering
+            } else {
+              message.warning("No images were returned.");
+            }
           } else {
+            message.error("Try going back and clicking next again");
             console.error("API Error:", response.status);
           }
         } catch (error) {
           console.error("Error during API call:", error);
+          message.error("An error occurred while loading pictures.");
+        } finally {
+          // Close the loading message
+          hideLoading();
         }
       };
 
       fetchData();
     }, 0);
   };
+
   const exportGrades = () => {
     const data = checkedTestPapers;
     setTimeout(() => {
@@ -213,6 +226,7 @@ export const TestChecker = () => {
       answer_key: parsedAnswerKey as TestInfo,
       test_papers: parsedTestPapers as AnswerKeyTest,
     };
+    //console.log(data);
     setTimeout(() => {
       // API call here
       const fetchData = async () => {
@@ -231,11 +245,14 @@ export const TestChecker = () => {
           if (response.ok) {
             const data = await response.json();
             setCheckedTestPapers(data);
-            console.log(data);
+            message.success("Papers Checked!!!, make sure to double check.");
+            //console.log(data);
           } else {
+            message.warning("API Error, try again.");
             console.error("API Error:", response.status);
           }
         } catch (error) {
+          message.error("Error during API call");
           console.error("Error during API call:", error);
         }
       };
@@ -287,25 +304,34 @@ export const TestChecker = () => {
   }, [handleParse]);
 
   const handleParseTestPapers = useCallback(async () => {
-    console.log(testPaperFile);
-    const response = await fetch(
-      "https://eminent-gazelle-vital.ngrok-free.app/parse-images",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(testPaperFile),
-      }
-    );
+    const hideMessage = message.loading("Parsing", 0);
+    try {
+      ////console.log(testPaperFile);
+      const response = await fetch(
+        "https://eminent-gazelle-vital.ngrok-free.app/parse-images",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(testPaperFile),
+        }
+      );
 
-    if (!response.ok) {
-      message.error("Failed to parse the Images");
-      throw new Error("Failed to parse images");
+      if (!response.ok) {
+        message.error("Failed to parse the Images");
+        throw new Error("Failed to parse images");
+      }
+      message.success("Parsed text are now editable");
+      const responseData = await response.json();
+      return responseData.results;
+    } catch (error) {
+      message.error("Failed to parse the image");
+      console.error(error);
+      throw error;
+    } finally {
+      hideMessage();
     }
-    message.success("Parsed text are now editable");
-    const responseData = await response.json();
-    return responseData.results;
   }, [testPaperFile]);
 
   const onTestPaperParse = useCallback(async () => {
@@ -406,9 +432,17 @@ export const TestChecker = () => {
 
   return (
     <>
-      <Steps current={current} items={items} style={{ width: "100%" }} />
+      <Steps
+        className="check-steps"
+        current={current}
+        items={items}
+        style={{ width: "100%" }}
+      />
       <div style={contentStyle}>{steps[current].content}</div>
-      <div style={{ marginTop: 24 }}>
+      <div
+        className={"step-btn"}
+        style={{ marginTop: 24, padding: "0px 0px 24px 0px" }}
+      >
         {current > 0 && (
           <Button style={{ margin: "0 8px" }} onClick={() => prev()}>
             Previous
@@ -417,8 +451,9 @@ export const TestChecker = () => {
         {current < steps.length - 1 && (
           <Button
             type="primary"
+            style={{ color: "white" }}
             onClick={() => {
-              console.log(answerKeyFile, parsedAnswerKey);
+              ////console.log(answerKeyFile, parsedAnswerKey);
               if (
                 current === 0 &&
                 answerKeyFile?.uid !== parsedAnswerKey?.generated_uid
@@ -436,11 +471,9 @@ export const TestChecker = () => {
                 onTestPaperParse();
               } else if (current === 3 && parsedTestPapers) {
                 gradeAKTP();
-
                 loadPictures();
-                console.log("I AM NOW HERE");
               }
-              console.log(parsedTestPapers);
+              ////console.log(parsedTestPapers);
               next();
             }}
             disabled={preventNext}

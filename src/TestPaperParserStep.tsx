@@ -42,7 +42,7 @@ export const TestPaperParserStep = ({
   }, [selectedTestPaperData, getFileUrl]);
 
   const selectedParsedTestPaper = useMemo(() => {
-    console.log();
+    //console.log();
     return selectedTestPaper
       ? parsedTestPaper?.find(
           (testPaper) => testPaper.generated_uid === selectedTestPaper
@@ -50,22 +50,22 @@ export const TestPaperParserStep = ({
       : null;
   }, [selectedTestPaper, parsedTestPaper]);
 
-  console.log("parsedTestPaper", parsedTestPaper);
-  console.log("selectedParsedTestPaper", selectedParsedTestPaper);
+  //console.log("parsedTestPaper", parsedTestPaper);
+  //console.log("selectedParsedTestPaper", selectedParsedTestPaper);
 
   return (
     <>
       <Row
         // onResize={setSizes}
         style={{
-          height: "calc(100vh - 512px)",
+          justifyContent: "center",
           boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
         }}
       >
         {/* <Splitter.Panel size={sizes[0]} resizable={true}> */}
         {selectedTestPaperUrl && (
           <Col
-            style={{ width: "489px", height: "100%" }}
+            style={{ width: "489px", height: "calc(100vh - 330px)" }}
             className="answer-key-img"
           >
             <Image src={selectedTestPaperUrl} className="answer-key-img" />
@@ -80,7 +80,7 @@ export const TestPaperParserStep = ({
           <Col
             style={{
               width: "489px",
-              height: "100%",
+              height: "calc(100vh - 330px)",
               display: "flex",
               background: "white",
             }}
@@ -93,7 +93,7 @@ export const TestPaperParserStep = ({
           <Col
             style={{
               overflowY: "scroll",
-              height: "calc(100vh - 512px)",
+              height: "calc(100vh - 330px)",
               padding: "48px",
               background: "white",
               // width: "100%",
@@ -117,6 +117,9 @@ export const TestPaperParserStep = ({
           const testUrl = getFileUrl(testPaperItem);
           return (
             <Image
+              className={
+                selectedTestPaper === testPaperItem.uid ? "check-selected" : ""
+              }
               style={{ cursor: "pointer" }}
               key={index}
               width={"100px"}

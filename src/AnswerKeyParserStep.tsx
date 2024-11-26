@@ -29,16 +29,15 @@ export const AnswerKeyParserStep = ({
 
   return (
     <Row
-      // onResize={setSizes}
       style={{
-        height: "calc(100vh - 512px)",
+        justifyContent: "center",
         boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
       }}
     >
       {/* <Splitter.Panel size={sizes[0]} resizable={true}> */}
       {fileUrl && (
         <Col
-          style={{ width: "489px", height: "100%" }}
+          style={{ width: "489px", height: "calc(100vh - 330px)" }}
           className="answer-key-img"
         >
           <Image src={fileUrl} className="answer-key-img" />
@@ -52,9 +51,9 @@ export const AnswerKeyParserStep = ({
       {!parsedAnswerKey && (
         <Col
           style={{
-            width: "489px",
-            height: "100%",
             display: "flex",
+            width: "489px",
+            height: "calc(100vh - 330px)",
             background: "white",
           }}
         >
@@ -66,11 +65,11 @@ export const AnswerKeyParserStep = ({
         <Col
           style={{
             overflowY: "scroll",
-            height: "calc(100vh - 512px)",
             padding: "48px",
             background: "white",
-            // width: "100%",
             width: "489px",
+            height: "calc(100vh - 330px)",
+            // width: "100%",
           }}
         >
           <AnswerKeyForm

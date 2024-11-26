@@ -101,29 +101,40 @@ export const AnswerKeyUploaderStep = ({
           onPreview={handlePreview}
           onChange={onChange}
           onRemove={async () => {
+            // Start the loading message
+            const hideMessage = message.loading("Deleting image...", 0); // 0 keeps it open indefinitely
+
             const body = fileData;
 
-            const response = await fetch(
-              "https://eminent-gazelle-vital.ngrok-free.app/delete-images",
-              {
-                method: "POST",
-                body: JSON.stringify(body),
-                headers: { "Content-Type": "application/json" },
-              }
-            );
-
-            if (response.ok) {
-              onRemove();
-              message.success(`Image deleted successfully!`);
-            } else {
-              message.error(
-                `Failed to delete image or image might not be in the server`
+            try {
+              const response = await fetch(
+                "https://eminent-gazelle-vital.ngrok-free.app/delete-images",
+                {
+                  method: "POST",
+                  body: JSON.stringify(body),
+                  headers: { "Content-Type": "application/json" },
+                }
               );
-            }
 
-            const data = await response.json();
-            console.log(data[0]);
-            return true;
+              if (response.ok) {
+                onRemove();
+                message.warning("Image deleted successfully!");
+              } else {
+                message.error(
+                  "Failed to delete image or image might not be on the server"
+                );
+              }
+
+              await response.json();
+              //console.log(data[0]);
+              return true;
+            } catch (error) {
+              console.error("Error deleting image:", error);
+              message.error("An error occurred while deleting the image");
+            } finally {
+              // Close the loading message
+              hideMessage();
+            }
           }}
 
           //disabled={fileListAK?.some((fileItem) => fileItem.status === "done")}

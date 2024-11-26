@@ -11,6 +11,8 @@ import {
   Modal,
   Button,
   Image,
+  Space,
+  QRCode,
 } from "antd";
 import { TestChecker } from "./TestCheckerSteps";
 
@@ -18,7 +20,18 @@ import {
   GithubOutlined,
   FacebookOutlined,
   QuestionCircleOutlined,
+} from "@ant-design/icons";
+
+import {
   DownloadOutlined,
+  LeftOutlined,
+  RightOutlined,
+  RotateLeftOutlined,
+  RotateRightOutlined,
+  SwapOutlined,
+  UndoOutlined,
+  ZoomInOutlined,
+  ZoomOutOutlined,
 } from "@ant-design/icons";
 import "./index.css";
 
@@ -26,12 +39,18 @@ const { Title } = Typography;
 
 const { Header, Content } = Layout;
 
+const imageList = [
+  "https://res.cloudinary.com/djdjamrmj/image/upload/v1732560489/JANE_DOE_iq6t7g.jpg",
+  "https://res.cloudinary.com/djdjamrmj/image/upload/v1732560488/BRODOE_nv5ybu.jpg",
+  "https://res.cloudinary.com/djdjamrmj/image/upload/v1732560488/JOHNDOE_iqkfsz.jpg",
+];
 const items = new Array(1).fill(null).map((_, index) => ({
   key: String(index + 1),
   label: `C.H.E.C.K `,
 }));
 
 const Main: React.FC = () => {
+  const [current, setCurrent] = React.useState(0);
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
   const [isFormattedModalOpen, setIsFormatedModalOpen] = useState(false);
 
@@ -86,6 +105,24 @@ const Main: React.FC = () => {
     );
   };
 
+  const onDownload = () => {
+    const url = imageList[current];
+    const suffix = url.slice(url.lastIndexOf("."));
+    const filename = Date.now() + suffix;
+
+    fetch(url)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const blobUrl = URL.createObjectURL(new Blob([blob]));
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        URL.revokeObjectURL(blobUrl);
+        link.remove();
+      });
+  };
   return (
     <Layout
       style={{
@@ -147,12 +184,12 @@ const Main: React.FC = () => {
         style={{ height: "auto", textAlign: "center" }}
       >
         <Col>
-          <Title style={{ color: "#ccc", padding: "30px 30px 0px 30px" }}>
+          <Title style={{ color: "#e7eee0", padding: "30px 30px 0px 30px" }}>
             C.H.E.C.K: Comprehensive Handwritten Exam Checking Kit
           </Title>
           <Content
             style={{
-              padding: "24px 24px",
+              padding: "20px 20px",
               //width: "calc(100vw - 400px)",
               height: "calc(100vh - 350px)",
               // background: colorBgContainer,
@@ -165,6 +202,7 @@ const Main: React.FC = () => {
       </Row>
       <FloatButton.Group shape="circle" style={{}}>
         <FloatButton
+          className="user-manual"
           type="primary"
           shape="circle"
           onClick={onManualBtnClick}
@@ -172,6 +210,7 @@ const Main: React.FC = () => {
           style={{ height: "7.5vh", width: "7.5vh", fontSize: "3vh" }}
         />
         <FloatButton
+          className="formatted-papers"
           shape="circle"
           onClick={onFormattedBtnClick}
           style={{ height: "7.5vh", width: "7.5vh", fontSize: "3vh" }}
@@ -187,6 +226,7 @@ const Main: React.FC = () => {
         footer={
           <>
             <Button
+              color="primary"
               type="primary"
               shape="circle"
               icon={<GithubOutlined />}
@@ -203,9 +243,115 @@ const Main: React.FC = () => {
           </>
         }
       >
-        <p>{isManualModalOpen ? "T" : "F"}</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+        <p>
+          1. To test the system properly, you first need to download the answer
+          key and test paper samples...
+        </p>
+        <p>
+          2. Each of the test paper can serve as an answer key for the others
+          for as long as they are of the same formatted paper
+        </p>
+        <p>3. You can now start by uploading one of the test image</p>
+        <p>
+          4. Take note that the models used for the OCR pipeline is not
+          completely accurate. It may completely miss some words or characters
+          and fail to recognize or misinterpret handwriting for other
+          characters.
+        </p>
+        <p>
+          5. Give us your input here if you are a professor in DLSU-D or scan
+          the QR code provided below
+        </p>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: 16,
+            padding: 12,
+          }}
+        >
+          <QRCode
+            errorLevel="H"
+            value="https://forms.gle/5LmpjSqSkBcKNsHQ7"
+            icon="https://res.cloudinary.com/djdjamrmj/image/upload/v1732569030/C.H.E.C.K_gsc9yf.svg"
+          />
+        </div>
+        <Image.PreviewGroup
+          preview={{
+            toolbarRender: (
+              _,
+              {
+                transform: { scale },
+                actions: {
+                  onActive,
+                  onFlipY,
+                  onFlipX,
+                  onRotateLeft,
+                  onRotateRight,
+                  onZoomOut,
+                  onZoomIn,
+                  onReset,
+                },
+              }
+            ) => (
+              <Space size={12} className="toolbar-wrapper">
+                <LeftOutlined
+                  onClick={() => onActive?.(-1)}
+                  style={{ fontSize: "20px" }}
+                />
+                <RightOutlined
+                  onClick={() => onActive?.(1)}
+                  style={{ fontSize: "20px" }}
+                />
+                <DownloadOutlined
+                  onClick={onDownload}
+                  style={{ fontSize: "20px" }}
+                />
+                <SwapOutlined
+                  rotate={90}
+                  onClick={onFlipY}
+                  style={{ fontSize: "20px" }}
+                />
+                <SwapOutlined onClick={onFlipX} style={{ fontSize: "20px" }} />
+                <RotateLeftOutlined
+                  onClick={onRotateLeft}
+                  style={{ fontSize: "20px" }}
+                />
+                <RotateRightOutlined
+                  onClick={onRotateRight}
+                  style={{ fontSize: "20px" }}
+                />
+                <ZoomOutOutlined
+                  disabled={scale === 1}
+                  onClick={onZoomOut}
+                  style={{ fontSize: "20px" }}
+                />
+                <ZoomInOutlined
+                  disabled={scale === 50}
+                  onClick={onZoomIn}
+                  style={{ fontSize: "20px" }}
+                />
+                <UndoOutlined onClick={onReset} style={{ fontSize: "20px" }} />
+              </Space>
+            ),
+            onChange: (index) => {
+              setCurrent(index);
+            },
+          }}
+        >
+          <Row gutter={[16, 16]} justify="center">
+            {imageList.map((src, index) => (
+              <Col span={6} key={index}>
+                <Image
+                  width="100%"
+                  height="auto"
+                  src={src}
+                  style={{ padding: "0px 0px 10px 0px" }}
+                />
+              </Col>
+            ))}
+          </Row>
+        </Image.PreviewGroup>
       </Modal>
       <Modal
         style={{}}
