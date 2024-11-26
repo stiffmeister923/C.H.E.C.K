@@ -64,7 +64,7 @@ const Main: React.FC = () => {
     // Automatically hide the tooltip after 5 seconds
     const timer = setTimeout(() => {
       setShowTooltip(false);
-    }, 15000); // Tooltip visible for 5 seconds
+    }, 0); // Tooltip visible for 5 seconds
 
     // Cleanup the timer to avoid memory leaks
     return () => clearTimeout(timer);
