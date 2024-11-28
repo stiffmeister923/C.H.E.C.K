@@ -108,6 +108,10 @@ h2 {
   font-weight: 300;
 }
 
+.ant-steps.check-steps .ant-steps-item {
+  padding: 12px 0px 0px calc(100% / 5);
+}
+
 .ant-steps.check-steps .ant-steps-item-process .ant-steps-item-icon {
   background-color: #e7eee0;
   border-color: #25391d;
@@ -440,4 +444,15 @@ h2 {
   .ant-btn:hover
   span {
   color: #1c271a;
+}
+
+.ant-tooltip.ant-tooltip-placement-top .ant-tooltip-content .ant-tooltip-inner {
+  background-color: #e7eee0;
+  color: #1c271a;
+  font-size: 16px;
+  font-family: var(--header-font);
+}
+
+.ant-tooltip.ant-tooltip-placement-top .ant-tooltip-arrow:before {
+  background-color: #e7eee0;
 }

@@ -108,7 +108,7 @@ export const TestPaperUploaderStep = ({
           );
 
           try {
-            //console.log(fileData, fileItem, body);
+            //////console.log(fileData, fileItem, body);
 
             const response = await fetch(
               "https://eminent-gazelle-vital.ngrok-free.app/delete-images",

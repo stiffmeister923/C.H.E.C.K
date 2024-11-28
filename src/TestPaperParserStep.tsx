@@ -1,4 +1,4 @@
-import { Col, Image, Row, Spin } from "antd";
+import { Col, Image, Row, Spin, Tooltip } from "antd";
 import { useCallback, useMemo, useState } from "react";
 import { FileData } from "./types";
 import { AnswerKeyForm, TestInfo } from "./AnswerKeyForm";
@@ -15,7 +15,8 @@ export const TestPaperParserStep = ({
   onSubmit: (uid: string, values: { [key: string]: string }) => void;
 }) => {
   const [selectedTestPaper, setSelectedTestPaper] = useState("");
-
+  const [showTooltip, setShowTooltip] = useState(true);
+  //console.log(parsedTestPaper);
   const getFileUrl = useCallback((item: FileData) => {
     const { data } = item;
     return Object.keys(data).reduce((url, currentKey) => {
@@ -42,7 +43,7 @@ export const TestPaperParserStep = ({
   }, [selectedTestPaperData, getFileUrl]);
 
   const selectedParsedTestPaper = useMemo(() => {
-    //console.log();
+    ////console.log();
     return selectedTestPaper
       ? parsedTestPaper?.find(
           (testPaper) => testPaper.generated_uid === selectedTestPaper
@@ -50,8 +51,8 @@ export const TestPaperParserStep = ({
       : null;
   }, [selectedTestPaper, parsedTestPaper]);
 
-  //console.log("parsedTestPaper", parsedTestPaper);
-  //console.log("selectedParsedTestPaper", selectedParsedTestPaper);
+  ////console.log("parsedTestPaper", parsedTestPaper);
+  ////console.log("selectedParsedTestPaper", selectedParsedTestPaper);
 
   return (
     <>
@@ -117,21 +118,30 @@ export const TestPaperParserStep = ({
         {testPaperFileList.map((testPaperItem, index) => {
           const testUrl = getFileUrl(testPaperItem);
           return (
-            <Image
-              className={
-                selectedTestPaper === testPaperItem.uid ? "check-selected" : ""
-              }
-              style={{ cursor: "pointer" }}
-              key={index}
-              width={"100px"}
-              height={"100px"}
-              src={testUrl as string}
-              preview={false}
-              onClick={() => {
-                setSelectedTestPaper("");
-                setSelectedTestPaper(testPaperItem.uid);
-              }}
-            />
+            <Tooltip
+              title="View text"
+              open={showTooltip && parsedTestPaper.length > 0}
+              placement="top"
+            >
+              <Image
+                className={
+                  selectedTestPaper === testPaperItem.uid
+                    ? "check-selected"
+                    : ""
+                }
+                style={{ cursor: "pointer" }}
+                key={index}
+                width={"100px"}
+                height={"100px"}
+                src={testUrl as string}
+                preview={false}
+                onClick={() => {
+                  setSelectedTestPaper("");
+                  setSelectedTestPaper(testPaperItem.uid);
+                  setShowTooltip(false);
+                }}
+              />
+            </Tooltip>
           );
         })}
         {/* {images.map((url, index) => (

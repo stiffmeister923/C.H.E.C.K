@@ -126,7 +126,7 @@ export const AnswerKeyUploaderStep = ({
               }
 
               await response.json();
-              //console.log(data[0]);
+              ////console.log(data[0]);
               return true;
             } catch (error) {
               console.error("Error deleting image:", error);

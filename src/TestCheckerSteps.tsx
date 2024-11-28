@@ -40,7 +40,7 @@ export const TestChecker = () => {
     } as TestInfo;
     updatedParsedAnswerKeys.Question_pair!.tests = updatedTests;
     setParsedAnswerKey(updatedParsedAnswerKeys);
-    //console.log(updatedParsedAnswerKeys);
+    //////console.log(updatedParsedAnswerKeys);
   };
 
   const onSubmitTestPapers = (
@@ -49,7 +49,7 @@ export const TestChecker = () => {
   ): void => {
     const updatedTestPapers = [...parsedTestPapers];
     const testPaperToUpdateIndex = updatedTestPapers.findIndex((testPaper) => {
-      // console.log(
+      // ////console.log(
       //   testPaper.generated_uid,
       //   uid,
       //   testPaper.generated_uid === uid
@@ -57,7 +57,7 @@ export const TestChecker = () => {
       return testPaper.generated_uid === uid;
     });
 
-    //console.log(parsedTestPapers);
+    //////console.log(parsedTestPapers);
 
     if (testPaperToUpdateIndex !== -1) {
       const updatedTests: Test[] = parsedTestPapers[
@@ -95,7 +95,7 @@ export const TestChecker = () => {
       const updatedFileData = testPaperItems?.filter(
         (fileDataItem: FileData) => fileDataItem.uid !== fileItem.uid
       );
-      //console.log("updatedFileData", updatedFileData);
+      //////console.log("updatedFileData", updatedFileData);
       return updatedFileData;
     });
     // setParsedTestPapers((testPaperItems) => {
@@ -124,7 +124,7 @@ export const TestChecker = () => {
 
   const prev = () => {
     setCurrent(current - 1);
-    //console.log(testPaperFile, testPaperFileList);
+    //////console.log(testPaperFile, testPaperFileList);
   };
   const loadPictures = useCallback(() => {
     const data = checkedTestPapers;
@@ -226,7 +226,7 @@ export const TestChecker = () => {
       answer_key: parsedAnswerKey as TestInfo,
       test_papers: parsedTestPapers as AnswerKeyTest,
     };
-    //console.log(data);
+    //////console.log(data);
     setTimeout(() => {
       // API call here
       const fetchData = async () => {
@@ -246,7 +246,7 @@ export const TestChecker = () => {
             const data = await response.json();
             setCheckedTestPapers(data);
             message.success("Papers Checked!!!, make sure to double check.");
-            //console.log(data);
+            //////console.log(data);
           } else {
             message.warning("API Error, try again.");
             console.error("API Error:", response.status);
@@ -306,7 +306,7 @@ export const TestChecker = () => {
   const handleParseTestPapers = useCallback(async () => {
     const hideMessage = message.loading("Parsing", 0);
     try {
-      ////console.log(testPaperFile);
+      ////////console.log(testPaperFile);
       const response = await fetch(
         "https://eminent-gazelle-vital.ngrok-free.app/parse-images",
         {
@@ -427,21 +427,21 @@ export const TestChecker = () => {
   };
 
   const preventNext = useMemo(() => {
-    console.log("Current step:", current);
+    ////console.log("Current step:", current);
 
     if (current === 0) {
-      console.log("Checking if answerKeyFile exists:", answerKeyFile);
+      ////console.log("Checking if answerKeyFile exists:", answerKeyFile);
       // Stage 0: Check if answerKeyFile is missing
       return !answerKeyFile;
     } else if (current === 2) {
-      //console.log("Checking if test papers are available:", testPaperFile);
+      //////console.log("Checking if test papers are available:", testPaperFile);
       if (!testPaperFile || testPaperFile.length === 0) {
-        //console.log("No test papers available.");
+        //////console.log("No test papers available.");
         return true; // Prevent going to the next step if there are no test papers
       }
 
-      // console.log("Checking if all test papers are parsed:", testPaperFile);
-      //console.log("Parsed Test Papers:", parsedTestPapers);
+      // ////console.log("Checking if all test papers are parsed:", testPaperFile);
+      //////console.log("Parsed Test Papers:", parsedTestPapers);
 
       // Stage 2: Check if all test papers have been parsed
       // return testPaperFile?.some(
@@ -479,7 +479,7 @@ export const TestChecker = () => {
             style={{ margin: "0 8px" }}
             onClick={() => {
               prev();
-              //console.log("Previous: ", current);
+              //////console.log("Previous: ", current);
             }}
           >
             Previous
@@ -490,8 +490,8 @@ export const TestChecker = () => {
             type="primary"
             style={{ color: "white" }}
             onClick={() => {
-              ////console.log(answerKeyFile, parsedAnswerKey);
-              //console.log("Next: ", current);
+              ////////console.log(answerKeyFile, parsedAnswerKey);
+              //////console.log("Next: ", current);
               if (
                 current === 0 &&
                 answerKeyFile?.uid !== parsedAnswerKey?.generated_uid
@@ -507,12 +507,12 @@ export const TestChecker = () => {
                 ) && // Check if at least one test paper file hasn't been parsed yet
                 testPaperFile.length !== 0
               ) {
-                console.log("SO FUCKING TRUE");
+                ////console.log("SO FUCKING TRUE");
                 onTestPaperParse();
               } else if (current === 3 && parsedTestPapers.length) {
                 gradeAKTP();
               }
-              ////console.log(parsedTestPapers);
+              ////////console.log(parsedTestPapers);
               next();
             }}
             disabled={preventNext}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import {
   Layout,
@@ -38,11 +38,18 @@ const { Title } = Typography;
 
 const { Header, Content } = Layout;
 
+const videoUrls = [
+  "https://res.cloudinary.com/djdjamrmj/video/upload/v1732757868/Change_DNS_in_Windows_svwv3g.mp4",
+  "https://res.cloudinary.com/djdjamrmj/video/upload/v1732757867/Change_DNS_server_settings_on_Android_Samsung_S20_knsblo.mp4",
+  "https://res.cloudinary.com/djdjamrmj/video/upload/v1732757866/Setup_DNS_ON_iPHONE_iOS_iphone_apple_dns_networking_computer_xxe1gd.mp4",
+];
+
 const imageList = [
   "https://res.cloudinary.com/djdjamrmj/image/upload/v1732560489/JANE_DOE_iq6t7g.jpg",
   "https://res.cloudinary.com/djdjamrmj/image/upload/v1732560488/BRODOE_nv5ybu.jpg",
   "https://res.cloudinary.com/djdjamrmj/image/upload/v1732560488/JOHNDOE_iqkfsz.jpg",
 ];
+
 const items = new Array(1).fill(null).map((_, index) => ({
   key: String(index + 1),
   label: `C.H.E.C.K `,
@@ -53,6 +60,12 @@ const Main: React.FC = () => {
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
   const [isFormattedModalOpen, setIsFormatedModalOpen] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [isVideoModalVisible, setIsVideoModalVisible] = useState(false);
+  const [shouldAutoPlay, setShouldAutoPlay] = useState(false);
+
+  // Reference to video element
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const {
     token: { borderRadiusLG },
@@ -64,11 +77,35 @@ const Main: React.FC = () => {
     // Automatically hide the tooltip after 5 seconds
     const timer = setTimeout(() => {
       setShowTooltip(false);
-    }, 0); // Tooltip visible for 5 seconds
+    }, 15000); // Tooltip visible for 5 seconds
 
     // Cleanup the timer to avoid memory leaks
     return () => clearTimeout(timer);
   }, []);
+  const showModal = () => {
+    setIsVideoModalVisible(true);
+    setShouldAutoPlay(true);
+  };
+
+  // Hide Modal
+  const handleCancel = () => {
+    setIsVideoModalVisible(false);
+    setShouldAutoPlay(false); // Disable autoplay when modal closes
+    if (videoRef.current) {
+      videoRef.current.pause(); // Pause video when modal is closed
+      //videoRef.current.currentTime = 0;
+    }
+  };
+  const nextVideo = () => {
+    setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videoUrls.length);
+  };
+
+  const prevVideo = () => {
+    setCurrentVideoIndex(
+      (prevIndex) => (prevIndex - 1 + videoUrls.length) % videoUrls.length
+    );
+  };
+
   const onManualBtnClick = () => {
     setIsManualModalOpen(true);
   };
@@ -285,6 +322,18 @@ const Main: React.FC = () => {
           </Link>
           , if you are a professor in DLSU-D or scan the QR code provided below
         </p>
+        <p style={{ fontWeight: "600", textAlign: "left" }}>
+          <strong>DISCLAIMER:</strong> If you're having issues with the
+          website's functionality, the API may not be properly reaching your
+          device. Please refer to the video below for troubleshooting steps.
+          While Google DNS is safe and reliable, be aware that using a public
+          DNS could expose more data points compared to a private configuration.{" "}
+          <span style={{ color: "#9B1B30" }}>Proceed at your own risk. </span>
+          If the issue persists, try switching to mobile data (e.g., Globe) or
+          use a service like Converge. Currently, users with PLDT and Smart are
+          experiencing difficulties with the API.
+        </p>
+
         <div
           style={{
             display: "flex",
@@ -293,12 +342,61 @@ const Main: React.FC = () => {
             padding: 12,
           }}
         >
-          <QRCode
-            errorLevel="H"
-            value="https://forms.gle/5LmpjSqSkBcKNsHQ7"
-            icon="https://res.cloudinary.com/djdjamrmj/image/upload/v1732569030/C.H.E.C.K_gsc9yf.svg"
-          />
+          {/* QR Code */}
+          <div style={{ marginRight: 16 }}>
+            <QRCode
+              errorLevel="H"
+              value="https://forms.gle/5LmpjSqSkBcKNsHQ7"
+              icon="https://res.cloudinary.com/djdjamrmj/image/upload/v1732569030/C.H.E.C.K_gsc9yf.svg"
+              size={100} // Set size for the QR code
+            />
+          </div>
+
+          {/* Video Button */}
+          <div>
+            <Button
+              onClick={showModal}
+              style={{
+                width: 100, // Match QR Code size
+                height: 100,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              View Videos
+            </Button>
+          </div>
+
+          {/* Modal for Video */}
+          <Modal
+            title="Video Instructions"
+            open={isVideoModalVisible}
+            onCancel={handleCancel}
+            footer={null}
+            width={600}
+          >
+            <div style={{ textAlign: "center" }}>
+              <video
+                ref={videoRef}
+                controls
+                autoPlay={shouldAutoPlay} // Automatically play the video when it appears
+                key={videoUrls[currentVideoIndex]}
+                width="100%"
+                src={videoUrls[currentVideoIndex]}
+                style={{ marginBottom: 16 }}
+              />
+              {/* Video Navigation */}
+              <div>
+                <Button onClick={prevVideo} style={{ marginRight: 8 }}>
+                  Previous
+                </Button>
+                <Button onClick={nextVideo}>Next</Button>
+              </div>
+            </div>
+          </Modal>
         </div>
+
         <Image.PreviewGroup
           preview={{
             toolbarRender: (
@@ -393,8 +491,8 @@ const Main: React.FC = () => {
       >
         <Image.PreviewGroup
           preview={{
-            onChange: (current, prev) =>
-              console.log(`current index: ${current}, prev index: ${prev}`),
+            onChange: (current, prev) => "",
+            //console.log(`current index: ${current}, prev index: ${prev}`),
           }}
         >
           <Row gutter={[16, 16]} justify="center">
