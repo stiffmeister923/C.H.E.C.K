@@ -302,13 +302,76 @@ const Main: React.FC = () => {
       >
         <p>
           1. To test the system properly, you first need to download the answer
-          key and test paper samples...
+          key and test paper samples below.
         </p>
+        <Image.PreviewGroup
+          preview={{
+            toolbarRender: (
+              _,
+              {
+                transform: { scale },
+                actions: {
+                  onActive,
+
+                  onZoomOut,
+                  onZoomIn,
+                  onReset,
+                },
+              }
+            ) => (
+              <Space size={12} className="toolbar-wrapper">
+                <LeftOutlined
+                  onClick={() => onActive?.(-1)}
+                  style={{ fontSize: "20px" }}
+                />
+                <RightOutlined
+                  onClick={() => onActive?.(1)}
+                  style={{ fontSize: "20px" }}
+                />
+                <DownloadOutlined
+                  onClick={onDownload}
+                  style={{ fontSize: "20px" }}
+                />
+                <ZoomOutOutlined
+                  disabled={scale === 1}
+                  onClick={onZoomOut}
+                  style={{ fontSize: "20px" }}
+                />
+                <ZoomInOutlined
+                  disabled={scale === 50}
+                  onClick={onZoomIn}
+                  style={{ fontSize: "20px" }}
+                />
+                <UndoOutlined onClick={onReset} style={{ fontSize: "20px" }} />
+              </Space>
+            ),
+            onChange: (index) => {
+              setCurrent(index);
+            },
+          }}
+        >
+          <Row gutter={[16, 16]} justify="center">
+            {imageList.map((src, index) => (
+              <Col span={6} key={index}>
+                <Image
+                  width="100%"
+                  height="auto"
+                  src={src}
+                  style={{ padding: "0px 0px 10px 0px" }}
+                />
+              </Col>
+            ))}
+          </Row>
+        </Image.PreviewGroup>
         <p>
           2. Each of the test paper can serve as an answer key for the others
           for as long as they are of the same formatted paper
         </p>
-        <p>3. You can now start by uploading one of the test image</p>
+        <p>
+          3. You can now start by uploading one of the test image as an answer
+          key, make sure that the entire paper is cropped or at least the entire
+          paper is visible like the samples above.
+        </p>
         <p>
           4. Take note that the models used for the OCR pipeline is not
           completely accurate. It may completely miss some words or characters
@@ -396,66 +459,6 @@ const Main: React.FC = () => {
             </div>
           </Modal>
         </div>
-
-        <Image.PreviewGroup
-          preview={{
-            toolbarRender: (
-              _,
-              {
-                transform: { scale },
-                actions: {
-                  onActive,
-
-                  onZoomOut,
-                  onZoomIn,
-                  onReset,
-                },
-              }
-            ) => (
-              <Space size={12} className="toolbar-wrapper">
-                <LeftOutlined
-                  onClick={() => onActive?.(-1)}
-                  style={{ fontSize: "20px" }}
-                />
-                <RightOutlined
-                  onClick={() => onActive?.(1)}
-                  style={{ fontSize: "20px" }}
-                />
-                <DownloadOutlined
-                  onClick={onDownload}
-                  style={{ fontSize: "20px" }}
-                />
-                <ZoomOutOutlined
-                  disabled={scale === 1}
-                  onClick={onZoomOut}
-                  style={{ fontSize: "20px" }}
-                />
-                <ZoomInOutlined
-                  disabled={scale === 50}
-                  onClick={onZoomIn}
-                  style={{ fontSize: "20px" }}
-                />
-                <UndoOutlined onClick={onReset} style={{ fontSize: "20px" }} />
-              </Space>
-            ),
-            onChange: (index) => {
-              setCurrent(index);
-            },
-          }}
-        >
-          <Row gutter={[16, 16]} justify="center">
-            {imageList.map((src, index) => (
-              <Col span={6} key={index}>
-                <Image
-                  width="100%"
-                  height="auto"
-                  src={src}
-                  style={{ padding: "0px 0px 10px 0px" }}
-                />
-              </Col>
-            ))}
-          </Row>
-        </Image.PreviewGroup>
       </Modal>
       <Modal
         style={{}}

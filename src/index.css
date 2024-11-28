@@ -108,6 +108,10 @@ h2 {
   font-weight: 300;
 }
 
+.ant-steps-item .ant-steps-item-container .ant-steps-item-tail:after {
+  background-color: #e7eee0;
+}
+
 .ant-steps.check-steps .ant-steps-item {
   padding: 12px 0px 0px calc(100% / 5);
 }
