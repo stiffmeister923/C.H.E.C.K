@@ -49,6 +49,7 @@ export type Test = {
 export type TestItem = {
   question_number: number;
   answer: string;
+  is_correct: boolean;
 };
 export const AnswerKeyForm = ({
   tests,
@@ -91,7 +92,14 @@ export const AnswerKeyForm = ({
                   // value={testItem.answer || null}
                   required={true}
                 >
-                  <Input placeholder="Question 1" />
+                  <Input
+                    placeholder="Question 1"
+                    style={{
+                      minWidth: "100px",
+                      borderColor: testItem.is_correct ? "green" : "lightgrey",
+                      borderWidth: "2px",
+                    }}
+                  />
                 </Form.Item>
               );
             })}

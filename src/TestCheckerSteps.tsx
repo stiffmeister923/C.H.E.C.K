@@ -1,10 +1,25 @@
 import React, { useCallback, useMemo, useState, useEffect } from "react";
-import { Button, message, Steps, theme, UploadProps, Image } from "antd";
+import {
+  Button,
+  message,
+  Steps,
+  theme,
+  UploadProps,
+  Image,
+  Col,
+  Row,
+} from "antd";
 import { AnswerKeyUploaderStep } from "./AnswerKeyUploaderStep";
 import { FileData } from "./types";
 import { UploadFile } from "antd/lib/upload";
 import { AnswerKeyParserStep } from "./AnswerKeyParserStep";
-import { TestInfo, Test, AnswerKeyTest, GradeTest } from "./AnswerKeyForm";
+import {
+  TestInfo,
+  Test,
+  AnswerKeyTest,
+  GradeTest,
+  AnswerKeyForm,
+} from "./AnswerKeyForm";
 import { TestPaperUploaderStep } from "./TestPaperUploaderStep";
 import { TestPaperParserStep } from "./TestPaperParserStep";
 import { DownloadOutlined } from "@ant-design/icons";
@@ -40,7 +55,7 @@ export const TestChecker = () => {
     } as TestInfo;
     updatedParsedAnswerKeys.Question_pair!.tests = updatedTests;
     setParsedAnswerKey(updatedParsedAnswerKeys);
-    //////console.log(updatedParsedAnswerKeys);
+    //console.log(updatedParsedAnswerKeys);
   };
 
   const onSubmitTestPapers = (
@@ -178,7 +193,7 @@ export const TestChecker = () => {
       const fetchData = async () => {
         try {
           const response = await fetch(
-            "https://eminent-gazelle-vital.ngrok-free.app/export_grades",
+            "https://eminent-gazelle-vital.ngrok-free.app/export_grades_with_images",
             {
               method: "POST",
               headers: {
@@ -282,6 +297,7 @@ export const TestChecker = () => {
       }
 
       const responseData = await response.json();
+      //console.log(responseData);
       message.success("Parsed text are now editable");
       return responseData.results;
     } catch (error) {
@@ -400,16 +416,40 @@ export const TestChecker = () => {
       title: "Check Test Papers",
       description: "Check test papers against answer key",
       content: (
-        <>
-          {imageList.map((base64Image, index) => (
-            <Image
-              key={index}
-              width={`calc(100vw/3)`}
-              src={`data:image/jpeg;base64,${base64Image}`}
-              alt={`Annotated Image ${index + 1}`}
-            />
-          ))}
-        </>
+        <Col>
+          {parsedAnswerKey && (
+            <Row
+              style={{
+                overflowY: "scroll",
+                padding: "48px",
+                background: "white",
+
+                height: "calc(100vh - 330px)",
+                display: "inline-grid",
+                minWidth: "200px",
+
+                // width: "100%",
+              }}
+            >
+              <div>
+                <AnswerKeyForm
+                  tests={parsedAnswerKey.Question_pair.tests}
+                  onSubmit={onSubmit}
+                />
+              </div>
+            </Row>
+          )}
+          <div>
+            {imageList.map((base64Image, index) => (
+              <Image
+                key={index}
+                width={`calc(100vw/3)`}
+                src={`data:image/jpeg;base64,${base64Image}`}
+                alt={`Annotated Image ${index + 1}`}
+              />
+            ))}
+          </div>
+        </Col>
       ),
     },
   ];
