@@ -151,7 +151,7 @@ export const TestChecker = () => {
       const fetchData = async () => {
         try {
           const response = await fetch(
-            "https://eminent-gazelle-vital.ngrok-free.app/get_annotated_image_base_64",
+            "https://publicly-helpful-monkey.ngrok-free.app/get_annotated_image_base_64",
             {
               method: "POST",
               headers: {
@@ -193,7 +193,7 @@ export const TestChecker = () => {
       const fetchData = async () => {
         try {
           const response = await fetch(
-            "https://eminent-gazelle-vital.ngrok-free.app/export_grades_with_images",
+            "https://publicly-helpful-monkey.ngrok-free.app/export_grades_with_images",
             {
               method: "POST",
               headers: {
@@ -247,7 +247,7 @@ export const TestChecker = () => {
       const fetchData = async () => {
         try {
           const response = await fetch(
-            "https://eminent-gazelle-vital.ngrok-free.app/grade_papers",
+            "https://publicly-helpful-monkey.ngrok-free.app/grade_papers",
             {
               method: "POST",
               headers: {
@@ -282,7 +282,7 @@ export const TestChecker = () => {
 
     try {
       const response = await fetch(
-        "https://eminent-gazelle-vital.ngrok-free.app/parse-images",
+        "https://publicly-helpful-monkey.ngrok-free.app/parse-images",
         {
           method: "POST",
           headers: {
@@ -324,7 +324,7 @@ export const TestChecker = () => {
     try {
       ////////console.log(testPaperFile);
       const response = await fetch(
-        "https://eminent-gazelle-vital.ngrok-free.app/parse-images",
+        "https://publicly-helpful-monkey.ngrok-free.app/parse-images",
         {
           method: "POST",
           headers: {
