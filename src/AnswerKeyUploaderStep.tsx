@@ -60,7 +60,7 @@ export const AnswerKeyUploaderStep = ({
 
             try {
               const response = await fetch(
-                "https://eminent-gazelle-vital.ngrok-free.app/process_images",
+                "https://publicly-helpful-monkey.ngrok-free.app/process_images",
                 {
                   method: "POST",
                   body: formData,
@@ -108,7 +108,7 @@ export const AnswerKeyUploaderStep = ({
 
             try {
               const response = await fetch(
-                "https://eminent-gazelle-vital.ngrok-free.app/delete-images",
+                "https://publicly-helpful-monkey.ngrok-free.app/delete-images",
                 {
                   method: "POST",
                   body: JSON.stringify(body),
